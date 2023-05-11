@@ -6,14 +6,20 @@ export class HiveStreamer {
   private dbAdapter: DatabaseAdapter;
   private streaming: boolean;
   private currentBlockNumber: number;
+  private contracts: Map<string, Contract>;
 
   constructor(client: Client, dbAdapter: DatabaseAdapter) {
     this.client = client;
     this.dbAdapter = dbAdapter;
     this.streaming = false;
     this.currentBlockNumber = 0;
+    this.contracts = new Map<string, Contract>();
   }
-
+      
+  registerContract(contract: Contract) {
+    this.contracts.set(contract.id, contract);
+  }
+      
   async startStreaming() {
     this.streaming = true;
     this.currentBlockNumber = await this.dbAdapter.getLatestBlockNumber();
@@ -45,17 +51,18 @@ export class HiveStreamer {
         const id = customJsonOp[1].id;
         const json = JSON.parse(customJsonOp[1].json);
 
-        if (json.hiveContract?.id === "testdice") {
-          const contractData = {
+        const contract = this.contracts.get(json.hiveContract?.id);
+        if (contract) {
+          const context = {
             blockNumber: blockNumber,
             blockId: block.block_id,
             previousBlockId: block.previous,
             transactionId: transaction.transaction_id,
             sender: customJsonOp[1].required_posting_auths[0] || customJsonOp[1].required_auths[0],
-            contract: json.hiveContract
           };
 
-          await this.dbAdapter.saveTransaction(contractData);
+          await contract.execute(json.hiveContract.payload, context);
+          await this.dbAdapter.saveTransaction({ ...context, contract: json.hiveContract });
         }
       }
     }
