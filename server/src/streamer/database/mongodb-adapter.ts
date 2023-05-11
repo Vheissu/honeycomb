@@ -32,4 +32,12 @@ export class MongoDBAdapter implements DatabaseAdapter {
   async updateLatestBlockNumber(blockNumber: number) {
     await this.db.collection("blocks").updateOne({}, { $set: { blockNumber } }, { upsert: true });
   }
+
+  async createTable(tableName: string, schema: string): Promise<void> {
+    // MongoDB doesn't require schema creation, so this method is not needed
+  }
+
+  async updateTable(tableName: string, data: any, condition: any): Promise<void> {
+    await this.db.collection(tableName).updateOne(condition, { $set: data });
+  }
 }
