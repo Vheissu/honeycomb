@@ -1,6 +1,6 @@
 import { Client } from "@hiveio/dhive";
 import { HiveStreamer } from "./hive-streamer";
-import { MongoDBAdapter } from "./database/mongo-adapter";
+import { MongoDBAdapter } from "./database/mongodb-adapter";
 import { SQLiteAdapter } from "./database/sqlite-adapter";
 import { CoinflipContract } from "./contracts/coinflip";
 
