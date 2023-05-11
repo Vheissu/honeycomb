@@ -1,5 +1,6 @@
 import sqlite3 from "sqlite3";
 import { DatabaseAdapter } from "./adapter";
+import { jsonSchemaToSql } from "./table-schema";
 
 export class SQLiteAdapter implements DatabaseAdapter {
   private db: sqlite3.Database;
@@ -74,9 +75,10 @@ export class SQLiteAdapter implements DatabaseAdapter {
     });
   }
       
-async createTable(tableName: string, schema: string): Promise<void> {
+async createTable(schema: TableSchema): Promise<void> {
+  const sql = jsonSchemaToSql(schema);
   return new Promise<void>((resolve, reject) => {
-    this.db.run(`CREATE TABLE IF NOT EXISTS ${tableName} (${schema});`, (err) => {
+    this.db.run(sql, (err) => {
       if (err) reject(err);
       else resolve();
     });
