@@ -73,4 +73,28 @@ export class SQLiteAdapter implements DatabaseAdapter {
       });
     });
   }
+      
+async createTable(tableName: string, schema: string): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    this.db.run(`CREATE TABLE IF NOT EXISTS ${tableName} (${schema});`, (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+}
+
+async updateTable(tableName: string, data: any, condition: any): Promise<void> {
+  const setClause = Object.entries(data).map(([key, value]) => `${key} = ?`).join(', ');
+  const whereClause = Object.entries(condition).map(([key, value]) => `${key} = ?`).join(' AND ');
+
+  const query = `UPDATE ${tableName} SET ${setClause} WHERE ${whereClause};`;
+  const values = [...Object.values(data), ...Object.values(condition)];
+
+  return new Promise<void>((resolve, reject) => {
+    this.db.run(query, values, (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+}
 }
