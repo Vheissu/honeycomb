@@ -35,21 +35,21 @@ export class NftContract implements Contract {
             } = payload;
 
             await nfts.insertOne({
-              issuer: context.sender,
-              symbol,
-              name,
-              orgName: orgName || "",
-              productName: productName || "",
-              metadata: { url: url || "" },
-              maxSupply: maxSupply || 0,
-              supply: 0,
-              circulatingSupply: 0,
-              delegationEnabled: false,
-              undelegationCooldown: 0,
-              authorizedIssuingAccounts: authorizedIssuingAccounts || [context.sender],
-              authorizedIssuingContracts: authorizedIssuingContracts || [],
-              properties: {},
-              groupBy: [],
+                issuer: context.sender,
+                symbol,
+                name,
+                orgName: orgName || "",
+                productName: productName || "",
+                metadata: { url: url || "" },
+                maxSupply: maxSupply || 0,
+                supply: 0,
+                circulatingSupply: 0,
+                delegationEnabled: false,
+                undelegationCooldown: 0,
+                authorizedIssuingAccounts: authorizedIssuingAccounts || [context.sender],
+                authorizedIssuingContracts: authorizedIssuingContracts || [],
+                properties: {},
+                groupBy: [],
             });
 
             console.log(`NFT created: symbol=${symbol}`);
@@ -60,6 +60,7 @@ export class NftContract implements Contract {
               { tokenId: payload.tokenId, owner: context.sender },
               { $set: { owner: payload.newOwner } }
             );
+        
             console.log(`NFT transferred: tokenId=${payload.tokenId} newOwner=${payload.newOwner}`);
             break;
 
@@ -77,23 +78,25 @@ export class NftContract implements Contract {
 
         // Check if tokenId is unique
         const existingToken = await nfts.findOne({ tokenId });
+        
         if (existingToken) {
-        console.log(`Token ID ${tokenId} already exists.`);
-        return;
+            console.log(`Token ID ${tokenId} already exists.`);
+            return;
         }
 
         // Check if the transaction has already been processed
         const existingTransaction = await transactions.findOne({ transactionId: context.transactionId });
+        
         if (existingTransaction) {
-        console.log(`Transaction ${context.transactionId} has already been processed.`);
-        return;
+            console.log(`Transaction ${context.transactionId} has already been processed.`);
+            return;
         }
 
         // Issue the NFT
         await nfts.insertOne({
-        tokenId,
-        owner,
-        metadata,
+            tokenId,
+            owner,
+            metadata,
         });
 
         console.log(`NFT issued: tokenId=${tokenId} owner=${owner}`);
