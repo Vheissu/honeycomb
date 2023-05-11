@@ -6,14 +6,14 @@ export class NFTContract implements Contract {
     id = "nft";
     name = "NFT";
 
-    private nftTableSchema: TableSchema = {
+  private nftTableSchema: TableSchema = {
         tableName: "nfts",
         columns: [
             { name: "id", type: "TEXT", primaryKey: true },
             { name: "owner", type: "TEXT" },
             { name: "data", type: "TEXT" },
         ],
-    };
+  };
 
     constructor(private dbAdapter: DatabaseAdapter) {
         this.initialize();
