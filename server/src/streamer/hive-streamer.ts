@@ -1,21 +1,31 @@
 import { Client } from "@hiveio/dhive";
-import { DatabaseAdapter } from "./database/adapter";
+import { MongoClient } from "mongodb";
 
 export class HiveStreamer {
   private client: Client;
-  private dbAdapter: DatabaseAdapter;
+  private mongoClient: MongoClient;
+  private dbName: string;
   private streaming: boolean;
   private currentBlockNumber: number;
   private contracts: Map<string, Contract>;
 
-  constructor(client: Client, dbAdapter: DatabaseAdapter) {
+  constructor(client: Client, mongoUri: string, dbName: string) {
     this.client = client;
-    this.dbAdapter = dbAdapter;
+    this.mongoClient = new MongoClient(mongoUri);
+    this.dbName = dbName;
     this.streaming = false;
     this.currentBlockNumber = 0;
     this.contracts = new Map<string, Contract>();
   }
-      
+
+  async connect() {
+    await this.mongoClient.connect();
+  }
+
+  async disconnect() {
+    await this.mongoClient.close();
+  }
+
   registerContract(contract: Contract) {
     this.contracts.set(contract.id, contract);
   }
@@ -66,5 +76,21 @@ export class HiveStreamer {
         }
       }
     }
+  }
+    
+  async saveTransaction(transaction: any) {
+    const db = this.mongoClient.db(this.dbName);
+    await db.collection("transactions").insertOne(transaction);
+  }
+
+  async getLatestBlockNumber() {
+    const db = this.mongoClient.db(this.dbName);
+    const latestBlock = await db.collection("blocks").findOne({}, { sort: { blockNumber: -1 } });
+    return latestBlock ? latestBlock.blockNumber : 0;
+  }
+
+  async updateLatestBlockNumber(blockNumber: number) {
+    const db = this.mongoClient.db(this.dbName);
+    await db.collection("blocks").updateOne({}, { $set: { blockNumber } }, { upsert: true });
   }
 }
