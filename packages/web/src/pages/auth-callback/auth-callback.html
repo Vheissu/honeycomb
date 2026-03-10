@@ -1,0 +1,13 @@
+<section class="mx-auto max-w-3xl">
+  <div class="panel rounded-[2rem] p-8">
+    <div class="eyebrow">OAuth callback</div>
+    <h1 class="display-text mt-4 text-5xl font-semibold tracking-[-0.07em]">Finishing HiveSigner sign-in.</h1>
+    <p class="body-copy mt-5 text-lg">
+      Honeycomb is processing the returned access token and will forward you into the playground as soon as the session is ready.
+    </p>
+
+    <div if.bind="error" class="mt-6 rounded-2xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
+      ${error}
+    </div>
+  </div>
+</section>

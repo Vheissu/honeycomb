@@ -1,0 +1,56 @@
+<section class="grid gap-6 lg:grid-cols-[1.1fr,0.9fr]">
+  <div class="panel rounded-[2rem] p-8">
+    <div class="eyebrow">Implementation notes</div>
+    <h1 class="display-text mt-4 text-5xl font-semibold tracking-[-0.07em] sm:text-6xl">
+      Build from the patterns, not from the placeholders.
+    </h1>
+    <p class="body-copy mt-5 max-w-2xl text-lg">
+      Honeycomb is meant to save time on the architecture and blockchain plumbing that most Hive apps end up rebuilding.
+      Keep the structure. Replace the example domain.
+    </p>
+  </div>
+
+  <div class="panel rounded-[2rem] p-8">
+    <div class="eyebrow">Package layout</div>
+    <div class="code-block mt-5 rounded-[1.5rem] p-5 text-sm leading-7">
+packages/
+  api/
+  shared/
+  web/
+docs/
+.env.example
+README.md
+    </div>
+  </div>
+</section>
+
+<section class="mt-8 section-grid">
+  <article repeat.for="group of commandGroups" class="panel rounded-[2rem] p-6">
+    <div class="eyebrow">${group.title}</div>
+    <div class="command-block mt-4 rounded-[1.5rem] p-5 text-sm leading-7">
+      <div repeat.for="line of group.command">${line}</div>
+    </div>
+    <p class="body-copy mt-4">${group.note}</p>
+  </article>
+</section>
+
+<section class="mt-8 grid gap-6 lg:grid-cols-[1.05fr,0.95fr]">
+  <div class="panel rounded-[2rem] p-7">
+    <div class="eyebrow">Why these defaults exist</div>
+    <div class="mt-6 grid gap-4">
+      <div repeat.for="decision of decisions" class="rounded-[1.5rem] border border-border bg-white/55 p-5">
+        <h2 class="display-text text-2xl font-semibold tracking-[-0.04em]">${decision.title}</h2>
+        <p class="body-copy mt-3">${decision.body}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel rounded-[2rem] p-7">
+    <div class="eyebrow">Your first changes</div>
+    <div class="mt-6 grid gap-3">
+      <div repeat.for="step of nextSteps" class="rounded-[1.5rem] border border-border bg-white/55 px-4 py-4 text-sm text-ink">
+        ${step}
+      </div>
+    </div>
+  </div>
+</section>

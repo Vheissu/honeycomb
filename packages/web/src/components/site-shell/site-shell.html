@@ -1,0 +1,183 @@
+<div class="paper-shell min-h-screen">
+  <header class="sticky top-0 z-30 border-b border-border/80 bg-paper/80 backdrop-blur-xl">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-8">
+      <div class="flex items-center gap-5">
+        <a load="route: home; context.bind: null" class="display-text text-3xl font-semibold tracking-[-0.08em]">
+          Honeycomb
+        </a>
+        <div class="hidden rounded-full border border-border bg-white/50 px-3 py-1 text-xs text-ink-soft md:block">
+          Hive starter kit
+        </div>
+      </div>
+
+      <nav class="hidden items-center gap-6 md:flex">
+        <a load="route: home; context.bind: null" class="nav-link">Home</a>
+        <a load="route: docs; context.bind: null" class="nav-link">Docs</a>
+        <a load="route: playground; context.bind: null" class="nav-link">Playground</a>
+      </nav>
+
+      <div class="hidden items-center gap-3 md:flex">
+        <div class="status-pill">
+          <span class="status-dot ${isApiOnline ? 'status-live' : 'status-offline'}"></span>
+          ${statusLabel}
+        </div>
+
+        <div if.bind="isLoggedIn" class="flex items-center gap-3">
+          <button
+            class="rounded-full border border-border bg-white/60 px-4 py-2 text-sm text-ink-soft transition hover:border-accent hover:text-ink"
+            click.trigger="goToPlayground()"
+          >
+            @${username}
+          </button>
+          <button
+            class="rounded-full border border-border bg-ink px-4 py-2 text-sm text-paper transition hover:bg-accent"
+            click.trigger="logout()"
+          >
+            Disconnect
+          </button>
+        </div>
+
+        <button
+          else
+          class="rounded-full border border-ink bg-ink px-4 py-2 text-sm text-paper transition hover:bg-accent"
+          click.trigger="openAuthModal()"
+        >
+          Connect Hive
+        </button>
+      </div>
+
+      <button class="rounded-full border border-border bg-white/60 px-3 py-2 md:hidden" click.trigger="toggleMobileMenu()">
+        Menu
+      </button>
+    </div>
+
+    <div if.bind="mobileMenuOpen" class="border-t border-border/80 px-4 py-4 md:hidden">
+      <div class="flex flex-col gap-3">
+        <a load="route: home; context.bind: null" class="nav-link">Home</a>
+        <a load="route: docs; context.bind: null" class="nav-link">Docs</a>
+        <a load="route: playground; context.bind: null" class="nav-link">Playground</a>
+        <div class="status-pill mt-2">
+          <span class="status-dot ${isApiOnline ? 'status-live' : 'status-offline'}"></span>
+          ${statusLabel}
+        </div>
+        <button
+          if.bind="!isLoggedIn"
+          class="mt-2 rounded-full border border-ink bg-ink px-4 py-3 text-left text-sm text-paper"
+          click.trigger="openAuthModal()"
+        >
+          Connect Hive
+        </button>
+        <button
+          if.bind="isLoggedIn"
+          class="mt-2 rounded-full border border-border bg-white/60 px-4 py-3 text-left text-sm text-ink-soft"
+          click.trigger="logout()"
+        >
+          Disconnect @${username}
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <au-slot></au-slot>
+  </main>
+
+  <footer class="mx-auto flex max-w-7xl flex-col gap-3 border-t border-border/80 px-4 py-8 text-sm text-ink-soft sm:px-6 lg:px-8 md:flex-row md:items-center md:justify-between">
+    <div>
+      <span class="display-text text-xl text-ink">Honeycomb</span>
+      <span class="ml-2">A serious starting point for Hive dApps.</span>
+    </div>
+    <div class="font-mono text-xs uppercase tracking-[0.2em]">
+      Platform account: @${platformAccount}
+    </div>
+  </footer>
+</div>
+
+<div
+  if.bind="authModalOpen"
+  class="fixed inset-0 z-50 flex items-start justify-center px-4 pt-20"
+  click.trigger="closeAuthModal()"
+>
+  <div class="absolute inset-0 bg-ink/35 backdrop-blur-sm"></div>
+
+  <div
+    class="panel panel-strong relative w-full max-w-2xl rounded-[2rem] p-6"
+    click.trigger="$event.stopPropagation()"
+  >
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <div class="eyebrow">Authentication</div>
+        <h2 class="display-text mt-2 text-4xl font-semibold tracking-[-0.05em]">
+          Connect with Hive.
+        </h2>
+        <p class="body-copy mt-3 max-w-xl">
+          Honeycomb ships with both browser-extension and OAuth flows so new apps can start from real Hive auth,
+          not placeholders.
+        </p>
+      </div>
+      <button class="rounded-full border border-border px-3 py-2 text-sm" click.trigger="closeAuthModal()">
+        Close
+      </button>
+    </div>
+
+    <div class="mt-8 grid gap-4 md:grid-cols-2">
+      <div class="panel rounded-[1.5rem] p-5">
+        <div class="eyebrow">Hive Keychain</div>
+        <h3 class="display-text mt-2 text-2xl">Local signing</h3>
+        <p class="body-copy mt-3 text-sm">
+          Good for desktop users and fast iteration. Honeycomb signs a short message to establish the session.
+        </p>
+
+        <label class="mt-5 block font-mono text-xs uppercase tracking-[0.16em] text-ink-soft">
+          Hive username
+        </label>
+        <input
+          type="text"
+          value.bind="usernameInput"
+          placeholder="e.g. beggars"
+          class="mt-2 w-full rounded-2xl border border-border bg-white/70 px-4 py-3 text-base outline-none transition focus:border-accent"
+          disabled.bind="authWorking"
+          keyup.trigger="$event.key === 'Enter' && signInWithKeychain()"
+        >
+
+        <div class="mt-3 font-mono text-xs uppercase tracking-[0.16em] text-ink-soft">
+          ${hasKeychain ? 'Extension detected' : 'Extension not detected'}
+        </div>
+
+        <button
+          class="mt-5 w-full rounded-full border border-ink bg-ink px-4 py-3 text-sm text-paper transition hover:bg-accent disabled:cursor-not-allowed disabled:opacity-60"
+          click.trigger="signInWithKeychain()"
+          disabled.bind="authWorking || !hasKeychain"
+        >
+          Sign in with Keychain
+        </button>
+      </div>
+
+      <div class="panel rounded-[1.5rem] p-5">
+        <div class="eyebrow">HiveSigner</div>
+        <h3 class="display-text mt-2 text-2xl">OAuth fallback</h3>
+        <p class="body-copy mt-3 text-sm">
+          Good when Keychain is unavailable. Honeycomb validates the app account before redirecting to reduce setup mistakes.
+        </p>
+
+        <div class="command-block mt-5 rounded-[1.25rem] p-4 text-xs leading-6">
+          client: ${runtimeConfig?.hivesignerClientId ?? 'honeycomb'}<br>
+          redirect: /auth/callback<br>
+          platform: @${platformAccount}
+        </div>
+
+        <button
+          class="mt-5 w-full rounded-full border border-accent bg-white/80 px-4 py-3 text-sm text-ink transition hover:border-ink hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+          click.trigger="signInWithHivesigner()"
+          disabled.bind="authWorking"
+        >
+          Continue with HiveSigner
+        </button>
+      </div>
+    </div>
+
+    <div if.bind="authError" class="mt-5 rounded-2xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
+      ${authError}
+    </div>
+  </div>
+</div>

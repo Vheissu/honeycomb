@@ -1,0 +1,205 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #171411;
+  --color-ink-soft: #5c5349;
+  --color-paper: #f3ede1;
+  --color-paper-deep: #e4d8c1;
+  --color-panel: rgba(255, 248, 236, 0.88);
+  --color-panel-strong: rgba(255, 245, 229, 0.96);
+  --color-border: rgba(23, 20, 17, 0.14);
+  --color-accent: #a24a27;
+  --color-accent-soft: #d57d57;
+  --color-accent-muted: #f1b28d;
+  --color-success: #26684f;
+  --color-danger: #a03d2d;
+  --font-sans: 'Newsreader', serif;
+  --font-display: 'Fraunces', serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+:root {
+  color: var(--color-ink);
+  background:
+    radial-gradient(circle at top left, rgba(162, 74, 39, 0.17), transparent 30%),
+    radial-gradient(circle at 80% 10%, rgba(38, 104, 79, 0.14), transparent 24%),
+    linear-gradient(180deg, #f7f1e6 0%, #efe6d6 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: transparent;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+::selection {
+  background: rgba(162, 74, 39, 0.18);
+}
+
+.paper-shell {
+  position: relative;
+}
+
+.paper-shell::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(23, 20, 17, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 20, 17, 0.03) 1px, transparent 1px);
+  background-size: 72px 72px;
+  opacity: 0.6;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.85), transparent 92%);
+}
+
+.panel {
+  border: 1px solid var(--color-border);
+  background: var(--color-panel);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.4) inset,
+    0 28px 70px rgba(67, 45, 24, 0.12);
+  backdrop-filter: blur(18px);
+}
+
+.panel-strong {
+  background: var(--color-panel-strong);
+}
+
+.eyebrow {
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+}
+
+.display-text {
+  font-family: var(--font-display);
+  letter-spacing: -0.04em;
+}
+
+.body-copy {
+  color: var(--color-ink-soft);
+  line-height: 1.65;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.58);
+  padding: 0.45rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.status-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+}
+
+.status-live {
+  background: var(--color-success);
+}
+
+.status-offline {
+  background: var(--color-danger);
+}
+
+.hero-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-card::after {
+  content: '';
+  position: absolute;
+  inset: auto -10% -30% 40%;
+  height: 18rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(162, 74, 39, 0.17) 0%, transparent 65%);
+}
+
+.command-block {
+  border: 1px solid rgba(23, 20, 17, 0.12);
+  background: rgba(28, 25, 22, 0.94);
+  color: #f4ecde;
+  font-family: var(--font-mono);
+}
+
+.code-block {
+  border: 1px solid rgba(23, 20, 17, 0.12);
+  background: rgba(255, 249, 239, 0.94);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.nav-link {
+  position: relative;
+  padding-bottom: 0.2rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-ink-soft);
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 180ms ease;
+  background: var(--color-accent);
+}
+
+.nav-link:hover::after {
+  transform: scaleX(1);
+}
+
+.section-grid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .section-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

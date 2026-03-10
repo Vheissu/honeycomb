@@ -1,0 +1,20 @@
+{
+  "name": "honeycomb",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "postinstall": "npm run build -w packages/shared",
+    "build": "npm run build -w packages/shared && npm run build -w packages/api && npm run build -w packages/web",
+    "test": "npm run test -w packages/shared && npm run test -w packages/api && npm run test -w packages/web",
+    "dev:api": "npm run build -w packages/shared && npm run dev -w packages/api",
+    "dev:web": "npm run build -w packages/shared && npm run dev -w packages/web",
+    "typecheck": "npm run build"
+  }
+}
