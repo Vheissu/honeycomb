@@ -95,6 +95,8 @@ Core web variables:
 ```bash
 npm run build                # build all packages
 npm test                     # run package tests
+npm run test:e2e             # run Playwright smoke coverage
+npm run test:ci              # unit + browser tests
 npm run dev:api              # start the API + indexer
 npm run dev:web              # start the Aurelia app
 
@@ -102,6 +104,33 @@ npm run build -w packages/shared
 npm run build -w packages/api
 npm run build -w packages/web
 ```
+
+## Tests
+
+Honeycomb currently ships with three layers of coverage:
+
+- `packages/shared` unit tests for validation and `custom_json` helpers
+- `packages/api` route tests for the public manifest, health route, and account lookups
+- `packages/web` unit coverage for the HiveSigner callback flow plus a Playwright smoke test for the starter homepage
+
+Use `npm test` for the fast unit suite and `npm run test:e2e` when you want browser coverage as well.
+
+## Docker
+
+Honeycomb now includes:
+
+- [Dockerfile](Dockerfile) for a multi-stage production-style build
+- [docker-compose.yml](docker-compose.yml) for running the built API + web bundle locally
+- root scripts: `npm run docker:build`, `npm run docker:up`, `npm run docker:down`
+
+Quick start:
+
+```bash
+cp .env.example .env
+npm run docker:up
+```
+
+The container serves the API and the built frontend from the same process on `http://localhost:3000`.
 
 ## Starter Philosophy
 

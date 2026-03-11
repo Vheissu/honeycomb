@@ -13,8 +13,13 @@
     "postinstall": "npm run build -w packages/shared",
     "build": "npm run build -w packages/shared && npm run build -w packages/api && npm run build -w packages/web",
     "test": "npm run test -w packages/shared && npm run test -w packages/api && npm run test -w packages/web",
+    "test:e2e": "npm run test:e2e -w packages/web",
+    "test:ci": "npm test && npm run test:e2e",
     "dev:api": "npm run build -w packages/shared && npm run dev -w packages/api",
     "dev:web": "npm run build -w packages/shared && npm run dev -w packages/web",
-    "typecheck": "npm run build"
+    "typecheck": "npm run build",
+    "docker:build": "docker build -t honeycomb .",
+    "docker:up": "docker compose up --build",
+    "docker:down": "docker compose down"
   }
 }

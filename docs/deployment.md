@@ -14,6 +14,22 @@ npm install
 npm run build
 ```
 
+## Docker
+
+This repo includes a multi-stage `Dockerfile` and a `docker-compose.yml` for a production-style local run:
+
+```bash
+cp .env.example .env
+docker compose up --build
+```
+
+That will:
+
+- install workspace dependencies
+- build `packages/shared`, `packages/api`, and `packages/web`
+- start the Fastify API
+- serve the built SPA from the API process on port `3000`
+
 ## Required Environment
 
 - `PORT`
