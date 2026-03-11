@@ -57,14 +57,17 @@ async function initTables(adapter: AdapterBase) {
   );
 }
 
-export function createNftContract(name = 'nft') {
+export function createNftContract(contractName = 'nft') {
   let adapter: AdapterBase;
 
   return defineContract({
-    name,
+    name: contractName,
     hooks: {
       create: async ({ adapter: a }) => {
         adapter = a;
+        if (!adapter.capabilities?.sql) {
+          throw new Error('NFT contract requires a SQL-capable adapter (SQLite or PostgreSQL).');
+        }
         await initTables(adapter);
       },
     },
@@ -88,7 +91,12 @@ export function createNftContract(name = 'nft') {
             [symbol, name, description, ctx.sender, maxSupply ?? null, royalty, baseUri, new Date()],
           );
 
-          console.log(`[nft] Collection ${symbol} created by ${ctx.sender}`);
+          await adapter.addEvent(new Date(), contractName, 'create', payload, {
+            action: 'collection_created',
+            data: { symbol, name, creator: ctx.sender },
+          });
+
+          console.log(`[${contractName}] Collection ${symbol} created by ${ctx.sender}`);
         },
         { schema: createSchema, trigger: 'custom_json' },
       ),
@@ -125,7 +133,12 @@ export function createNftContract(name = 'nft') {
             [collectionSymbol],
           );
 
-          console.log(`[nft] Token ${tokenId} issued to ${to} in ${collectionSymbol}`);
+          await adapter.addEvent(new Date(), contractName, 'issue', payload, {
+            action: 'nft_issued',
+            data: { tokenId, collectionSymbol, to, mintedBy: ctx.sender },
+          });
+
+          console.log(`[${contractName}] Token ${tokenId} issued to ${to} in ${collectionSymbol}`);
         },
         { schema: issueSchema, trigger: 'custom_json' },
       ),
@@ -152,7 +165,12 @@ export function createNftContract(name = 'nft') {
             [to, tokenId, collectionSymbol],
           );
 
-          console.log(`[nft] Token ${tokenId} transferred from ${ctx.sender} to ${to}`);
+          await adapter.addEvent(new Date(), contractName, 'transfer', payload, {
+            action: 'nft_transferred',
+            data: { tokenId, collectionSymbol, from: ctx.sender, to },
+          });
+
+          console.log(`[${contractName}] Token ${tokenId} transferred from ${ctx.sender} to ${to}`);
         },
         { schema: transferSchema, trigger: 'custom_json' },
       ),
