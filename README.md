@@ -31,7 +31,9 @@ Detailed docs:
 - Workspace layout aligned with how production Hive apps tend to evolve
 - Shared `custom_json` helpers so the backend and frontend agree on payload shape
 - A generic indexer that can replay, resume, and watch selected operation ids
+- An example recent-operations projection and read-model route you can replace with real persistence
 - `/api/public`, `/api/config`, `/api/health`, `/api/accounts/:username`, and `/api/indexer/status`
+- `/api/indexer/recent` as a starter projection example
 - A polished web starter that doubles as live docs and a transaction playground
 - Hive Keychain and HiveSigner auth scaffolding you can extend instead of rewriting
 
@@ -40,13 +42,7 @@ Detailed docs:
 ```bash
 npm install
 cp .env.example .env
-npm run dev:api
-```
-
-In a second terminal:
-
-```bash
-npm run dev:web
+npm run dev
 ```
 
 Default local URLs:
@@ -95,6 +91,7 @@ Core web variables:
 
 ```bash
 npm run build                # build all packages
+npm run dev                  # start API + web together
 npm run typecheck            # run TypeScript checks in every package
 npm run check                # typecheck + unit tests
 npm test                     # run package tests
@@ -114,6 +111,7 @@ Honeycomb currently ships with three layers of coverage:
 
 - `packages/shared` unit tests for validation and `custom_json` helpers
 - `packages/api` route and config tests for the public manifest, health route, account lookups, and env coercion
+- `packages/api` route coverage for the example recent-operations read model
 - `packages/web` unit coverage for the HiveSigner callback flow plus a Playwright smoke test for the starter homepage
 
 Use `npm test` for the fast unit suite and `npm run test:e2e` when you want browser coverage as well.
@@ -145,3 +143,13 @@ Honeycomb assumes that most Hive app writes happen on-chain and the API is prima
 - indexing and projection in the backend
 
 If your app needs server-authorized writes, background jobs, or heavier persistence, treat this repo as the baseline and add those concerns deliberately.
+
+## Starter Signals
+
+A starter codebase should show a few things immediately:
+
+- You can boot it with one command.
+- CI already knows how to verify it.
+- The indexer produces a real API shape, not just console output.
+
+Honeycomb now covers those with `npm run dev`, `.github/workflows/ci.yml`, and the example `/api/indexer/recent` projection.

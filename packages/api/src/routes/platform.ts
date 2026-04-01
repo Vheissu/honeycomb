@@ -29,6 +29,11 @@ const publicEndpoints: PublicEndpoint[] = [
     path: '/api/indexer/status',
     description: 'Current indexer status',
   },
+  {
+    method: 'GET',
+    path: '/api/indexer/recent',
+    description: 'Recent indexed operations from the example read model',
+  },
 ];
 
 const starterPackages: StarterPackage[] = [
@@ -54,6 +59,8 @@ const starterFeatures = [
   'HiveSigner OAuth scaffold',
   'Typed custom_json helpers',
   'Resumable irreversible-block indexer',
+  'Example projection + read-model route',
+  'GitHub Actions CI workflow',
   'Public API manifest',
   'Monorepo starter layout',
 ];

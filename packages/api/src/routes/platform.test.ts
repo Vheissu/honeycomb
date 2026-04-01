@@ -26,6 +26,7 @@ describe('platform routes', () => {
     expect(response.json()).toMatchObject({
       name: 'Honeycomb',
       operationPrefix: 'honeycomb',
+      features: expect.arrayContaining(['GitHub Actions CI workflow']),
     });
   });
 

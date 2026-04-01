@@ -54,3 +54,14 @@ README.md
     </div>
   </div>
 </section>
+
+<section class="mt-8 panel rounded-[2rem] p-7">
+  <div class="eyebrow">What People Expect From A Starter</div>
+  <div class="mt-6 grid gap-4 lg:grid-cols-3">
+    <div repeat.for="expectation of starterExpectations" class="rounded-[1.5rem] border border-border bg-white/55 p-5">
+      <h2 class="display-text text-2xl font-semibold tracking-[-0.04em]">${expectation.title}</h2>
+      <p class="body-copy mt-3">${expectation.body}</p>
+      <div class="mt-4 font-mono text-xs uppercase tracking-[0.18em] text-ink-soft">${expectation.file}</div>
+    </div>
+  </div>
+</section>

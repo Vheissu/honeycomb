@@ -105,3 +105,54 @@
     </div>
   </div>
 </section>
+
+<section class="mt-8 grid gap-6 lg:grid-cols-[1.05fr,0.95fr]">
+  <div class="panel rounded-[2rem] p-7">
+    <div class="eyebrow">Projection example</div>
+    <h2 class="display-text mt-3 text-3xl font-semibold tracking-[-0.05em]">
+      Recent indexed operations
+    </h2>
+    <p class="body-copy mt-4 max-w-2xl">
+      A starter should show at least one read-model pattern. Honeycomb keeps a small in-memory projection at
+      <code>/api/indexer/recent</code> so teams can replace a working example instead of starting from console logs.
+    </p>
+
+    <div if.bind="recentOperations.length" class="mt-6 grid gap-3">
+      <div repeat.for="operation of recentOperations" class="rounded-[1.5rem] border border-border bg-white/55 p-5">
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+          <div class="display-text text-2xl font-semibold tracking-[-0.04em]">${operation.summary}</div>
+          <div class="font-mono text-xs uppercase tracking-[0.18em] text-ink-soft">
+            block ${operation.blockNumber}
+          </div>
+        </div>
+        <div class="mt-3 text-sm text-ink-soft">
+          <span>${operation.actor ? `@${operation.actor}` : 'unknown actor'}</span>
+          <span if.bind="operation.publishedAt"> · ${operation.publishedAt}</span>
+          <span if.bind="!operation.publishedAt"> · observed ${operation.observedAt}</span>
+        </div>
+      </div>
+    </div>
+
+    <div else class="mt-6 rounded-[1.5rem] border border-dashed border-border bg-white/40 p-5 text-sm text-ink-soft">
+      No indexed operations yet. Broadcast from the playground or point the starter at your own app ids to see the read model fill in.
+    </div>
+  </div>
+
+  <div class="panel rounded-[2rem] p-7">
+    <div class="eyebrow">Starter expectations</div>
+    <div class="mt-6 grid gap-3">
+      <div class="rounded-[1.5rem] border border-border bg-white/55 px-4 py-4 text-sm text-ink">
+        One-command dev via <code>npm run dev</code>
+      </div>
+      <div class="rounded-[1.5rem] border border-border bg-white/55 px-4 py-4 text-sm text-ink">
+        CI already wired in <code>.github/workflows/ci.yml</code>
+      </div>
+      <div class="rounded-[1.5rem] border border-border bg-white/55 px-4 py-4 text-sm text-ink">
+        Example projection route you can replace instead of inventing from scratch
+      </div>
+      <div class="rounded-[1.5rem] border border-border bg-white/55 px-4 py-4 text-sm text-ink">
+        Shared contracts, env docs, browser smoke coverage, and container build path
+      </div>
+    </div>
+  </div>
+</section>

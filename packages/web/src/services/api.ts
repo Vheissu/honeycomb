@@ -2,6 +2,7 @@ import type {
   ApiHealth,
   AppManifest,
   HiveAccountSnapshot,
+  IndexedOperationRecord,
   IndexerStatus,
   RuntimeConfig,
 } from '@honeycomb/shared';
@@ -40,6 +41,10 @@ export class ApiService {
 
   getIndexerStatus(): Promise<IndexerStatus> {
     return request<IndexerStatus>('/api/indexer/status');
+  }
+
+  getRecentIndexedOperations(): Promise<IndexedOperationRecord[]> {
+    return request<IndexedOperationRecord[]>('/api/indexer/recent');
   }
 
   getAccount(username: string): Promise<HiveAccountSnapshot> {

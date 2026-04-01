@@ -11,6 +11,7 @@
   },
   "scripts": {
     "postinstall": "npm run build -w packages/shared",
+    "dev": "concurrently -n api,web -c yellow,cyan \"npm run dev:api\" \"npm run dev:web\"",
     "build": "npm run build -w packages/shared && npm run build -w packages/api && npm run build -w packages/web",
     "typecheck": "npm run typecheck -w packages/shared && npm run typecheck -w packages/api && npm run typecheck -w packages/web",
     "test": "npm run test -w packages/shared && npm run test -w packages/api && npm run test -w packages/web",
@@ -22,5 +23,8 @@
     "docker:build": "docker build -t honeycomb .",
     "docker:up": "docker compose up --build",
     "docker:down": "docker compose down"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
 }

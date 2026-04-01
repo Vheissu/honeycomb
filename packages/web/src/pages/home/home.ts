@@ -1,5 +1,5 @@
 import { resolve } from 'aurelia';
-import type { ApiHealth, AppManifest } from '@honeycomb/shared';
+import type { ApiHealth, AppManifest, IndexedOperationRecord } from '@honeycomb/shared';
 import { ApiService } from '../../services/api';
 
 interface Principle {
@@ -12,6 +12,7 @@ export class Home {
 
   manifest: AppManifest | null = null;
   health: ApiHealth | null = null;
+  recentOperations: IndexedOperationRecord[] = [];
   loadError: string | null = null;
 
   readonly principles: Principle[] = [
@@ -36,19 +37,20 @@ export class Home {
   readonly quickStartSteps = [
     'npm install',
     'cp .env.example .env',
-    'npm run dev:api',
-    'npm run dev:web',
+    'npm run dev',
   ];
 
   async binding(): Promise<void> {
     try {
-      const [manifest, health] = await Promise.all([
+      const [manifest, health, recentOperations] = await Promise.all([
         this.api.getManifest(),
         this.api.getHealth(),
+        this.api.getRecentIndexedOperations(),
       ]);
 
       this.manifest = manifest;
       this.health = health;
+      this.recentOperations = recentOperations;
     } catch (error) {
       this.loadError = error instanceof Error ? error.message : 'Failed to load starter status.';
     }

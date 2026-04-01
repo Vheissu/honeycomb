@@ -50,6 +50,17 @@ export interface IndexerStatus {
   lastError: string | null;
 }
 
+export interface IndexedOperationRecord {
+  operationId: string;
+  actor: string | null;
+  blockNumber: number;
+  observedAt: string;
+  publishedAt: string | null;
+  payloadKind: string | null;
+  payloadAction: string | null;
+  summary: string;
+}
+
 export interface ApiHealth {
   status: 'ok';
   timestamp: string;
