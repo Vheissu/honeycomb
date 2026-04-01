@@ -70,6 +70,7 @@ Core API variables:
 - `HIVE_INDEXER_ENABLED`
 - `HIVE_INDEXER_START_BLOCK`
 - `HIVE_INDEXER_STATE_FILE`
+- `HIVE_INDEXER_OPERATION_IDS`
 
 Core web variables:
 
@@ -94,6 +95,8 @@ Core web variables:
 
 ```bash
 npm run build                # build all packages
+npm run typecheck            # run TypeScript checks in every package
+npm run check                # typecheck + unit tests
 npm test                     # run package tests
 npm run test:e2e             # run Playwright smoke coverage
 npm run test:ci              # unit + browser tests
@@ -110,7 +113,7 @@ npm run build -w packages/web
 Honeycomb currently ships with three layers of coverage:
 
 - `packages/shared` unit tests for validation and `custom_json` helpers
-- `packages/api` route tests for the public manifest, health route, and account lookups
+- `packages/api` route and config tests for the public manifest, health route, account lookups, and env coercion
 - `packages/web` unit coverage for the HiveSigner callback flow plus a Playwright smoke test for the starter homepage
 
 Use `npm test` for the fast unit suite and `npm run test:e2e` when you want browser coverage as well.

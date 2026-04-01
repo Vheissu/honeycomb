@@ -16,6 +16,9 @@
           value.bind="operationId"
           class="mt-2 w-full rounded-2xl border border-border bg-white/70 px-4 py-3 outline-none transition focus:border-accent"
         >
+        <div if.bind="operationIdError" class="mt-2 text-sm text-danger">
+          ${operationIdError}
+        </div>
       </div>
 
       <div>

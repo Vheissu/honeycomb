@@ -29,4 +29,14 @@ describe('custom_json helpers', () => {
   it('normalizes generated operation ids', () => {
     expect(createOperationId('Honeycomb Starter', 'Create Item')).toBe('honeycomb_starter_create_item');
   });
+
+  it('rejects invalid operation ids before building an operation', () => {
+    expect(() =>
+      buildPostingCustomJson({
+        username: 'alice',
+        operationId: 'Honeycomb App Action',
+        payload: createExampleActionPayload('Hello Hive'),
+      }),
+    ).toThrow(/Operation ids must use lowercase letters, numbers, and underscores/);
+  });
 });

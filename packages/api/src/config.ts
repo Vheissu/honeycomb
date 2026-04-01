@@ -7,6 +7,8 @@ import {
   DefaultHiveApiNodes,
   PlatformDefaults,
   SupportedAuthProviders,
+  isValidOperationId,
+  normalizeOperationId,
   parseStringList,
   sanitizeOperationPrefix,
 } from '@honeycomb/shared';
@@ -17,6 +19,58 @@ const repoRoot = path.resolve(__dirname, '../../..');
 
 dotenv.config({ path: path.join(repoRoot, '.env') });
 dotenv.config();
+
+const TRUE_ENV_VALUES = new Set(['1', 'true', 'yes', 'on']);
+const FALSE_ENV_VALUES = new Set(['0', 'false', 'no', 'off']);
+
+export function coerceBooleanEnvValue(value: unknown): unknown {
+  if (typeof value === 'boolean') {
+    return value;
+  }
+
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    if (!normalized) {
+      return undefined;
+    }
+
+    if (TRUE_ENV_VALUES.has(normalized)) {
+      return true;
+    }
+
+    if (FALSE_ENV_VALUES.has(normalized)) {
+      return false;
+    }
+  }
+
+  return value;
+}
+
+export function coerceOptionalPositiveIntEnvValue(value: unknown): unknown {
+  if (value === undefined || value === null) {
+    return undefined;
+  }
+
+  if (typeof value === 'string') {
+    const normalized = value.trim();
+    if (!normalized) {
+      return undefined;
+    }
+
+    return Number(normalized);
+  }
+
+  return value;
+}
+
+const booleanEnvSchema = z
+  .preprocess(coerceBooleanEnvValue, z.boolean().optional())
+  .transform((value) => value ?? true);
+
+const optionalPositiveIntEnvSchema = z.preprocess(
+  coerceOptionalPositiveIntEnvValue,
+  z.number().int().positive().optional(),
+);
 
 const envSchema = z.object({
   HOST: z.string().default('0.0.0.0'),
@@ -30,8 +84,8 @@ const envSchema = z.object({
   HIVE_PLATFORM_ACCOUNT: z.string().min(1).default('honeycomb'),
   HIVESIGNER_CLIENT_ID: z.string().min(1).default('honeycomb'),
   HIVE_OPERATION_PREFIX: z.string().min(1).default('honeycomb'),
-  HIVE_INDEXER_ENABLED: z.coerce.boolean().default(true),
-  HIVE_INDEXER_START_BLOCK: z.coerce.number().int().positive().optional(),
+  HIVE_INDEXER_ENABLED: booleanEnvSchema,
+  HIVE_INDEXER_START_BLOCK: optionalPositiveIntEnvSchema,
   HIVE_INDEXER_STATE_FILE: z.string().min(1).default(PlatformDefaults.INDEXER_STATE_FILE),
   HIVE_INDEXER_OPERATION_IDS: z.string().default(ALL_OPERATION_IDS.join(',')),
 });
@@ -67,7 +121,16 @@ export function getHiveApiNodes(): string[] {
 }
 
 export function getIndexedOperationIds(): string[] {
-  return parseStringList(getConfig().HIVE_INDEXER_OPERATION_IDS);
+  const operationIds = parseStringList(getConfig().HIVE_INDEXER_OPERATION_IDS)
+    .map((value) => normalizeOperationId(value));
+
+  if (operationIds.length === 0 || operationIds.some((value) => !isValidOperationId(value))) {
+    throw new Error(
+      'HIVE_INDEXER_OPERATION_IDS must contain one or more lowercase operation ids separated by commas.',
+    );
+  }
+
+  return [...new Set(operationIds)];
 }
 
 export function getSafeRuntimeConfig() {

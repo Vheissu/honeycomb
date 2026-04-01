@@ -4,7 +4,12 @@ import type {
   ExampleActionPayload,
   HoneycombPayload,
 } from './types.js';
-import { isValidHiveUsername, sanitizeOperationPrefix } from './validation.js';
+import {
+  isValidHiveUsername,
+  isValidOperationId,
+  normalizeOperationId,
+  sanitizeOperationPrefix,
+} from './validation.js';
 
 interface BuildPostingCustomJsonOptions<T> {
   username: string;
@@ -20,10 +25,15 @@ export function createCustomJsonEnvelope<T>(
   app = 'honeycomb',
   version = '0.1.0',
 ): CustomJsonEnvelope<T> {
+  const normalizedOperationId = normalizeOperationId(operationId);
+  if (!isValidOperationId(normalizedOperationId)) {
+    throw new Error('Operation ids must use lowercase letters, numbers, and underscores.');
+  }
+
   return {
     app,
     version,
-    operationId,
+    operationId: normalizedOperationId,
     publishedAt: new Date().toISOString(),
     payload,
   };
@@ -41,12 +51,13 @@ export function buildPostingCustomJson<T>({
     throw new Error('A valid Hive username is required.');
   }
 
-  const envelope = createCustomJsonEnvelope(operationId, payload, app, version);
+  const normalizedOperationId = normalizeOperationId(operationId);
+  const envelope = createCustomJsonEnvelope(normalizedOperationId, payload, app, version);
 
   return {
     required_auths: [],
     required_posting_auths: [normalizedUsername],
-    id: operationId,
+    id: normalizedOperationId,
     json: JSON.stringify(envelope),
   };
 }
@@ -59,6 +70,10 @@ export function parseCustomJsonEnvelope<T = HoneycombPayload>(json: string): Cus
 
   if (typeof parsed.operationId !== 'string' || !parsed.operationId.trim()) {
     throw new Error('Envelope operationId is missing.');
+  }
+
+  if (!isValidOperationId(parsed.operationId)) {
+    throw new Error('Envelope operationId is invalid.');
   }
 
   if (typeof parsed.publishedAt !== 'string' || !parsed.publishedAt.trim()) {

@@ -1,3 +1,5 @@
+import { isValidHiveUsername } from '@honeycomb/shared';
+
 const APP_NAME = import.meta.env.VITE_HIVE_APP_NAME ?? 'Honeycomb';
 const STORAGE_KEY = 'honeycomb_auth';
 const HIVE_API_NODE = 'https://api.hive.blog';
@@ -54,9 +56,17 @@ export class AuthService {
       this.hivesignerAccessToken = parsed.hivesignerAccessToken ?? null;
       this.hivesignerExpiresAtMs = parsed.hivesignerExpiresAtMs ?? null;
 
-      if (this.hivesignerExpiresAtMs && Date.now() > this.hivesignerExpiresAtMs) {
-        this.hivesignerAccessToken = null;
-        this.hivesignerExpiresAtMs = null;
+      if (this.username && !isValidHiveUsername(this.username)) {
+        this.logout();
+        return;
+      }
+
+      if (
+        this.authMethod === 'hivesigner'
+        && this.hivesignerExpiresAtMs
+        && Date.now() > this.hivesignerExpiresAtMs
+      ) {
+        this.logout();
       }
     } catch {
       localStorage.removeItem(STORAGE_KEY);
@@ -73,6 +83,10 @@ export class AuthService {
 
   async loginWithKeychain(username: string): Promise<boolean> {
     const normalizedUsername = username.trim().toLowerCase();
+    if (!isValidHiveUsername(normalizedUsername)) {
+      throw new Error('Enter a valid Hive username.');
+    }
+
     const keychain = (window as any).hive_keychain;
 
     if (!keychain) {
@@ -123,7 +137,12 @@ export class AuthService {
   }
 
   handleHivesignerCallback(accessToken: string, username: string, expiresInSeconds?: number): void {
-    this.username = username.trim().toLowerCase();
+    const normalizedUsername = username.trim().toLowerCase();
+    if (!isValidHiveUsername(normalizedUsername)) {
+      throw new Error('HiveSigner returned an invalid Hive username.');
+    }
+
+    this.username = normalizedUsername;
     this.authMethod = 'hivesigner';
     this.hivesignerAccessToken = accessToken;
     this.hivesignerExpiresAtMs = expiresInSeconds

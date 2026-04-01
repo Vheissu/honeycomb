@@ -1,4 +1,5 @@
 const HIVE_USERNAME_PATTERN = /^[a-z][a-z0-9.-]{2,15}$/;
+const OPERATION_ID_PATTERN = /^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/;
 
 export function isValidHiveUsername(value: string): boolean {
   const normalized = String(value ?? '').trim().toLowerCase();
@@ -11,6 +12,14 @@ export function isValidHiveUsername(value: string): boolean {
   }
 
   return true;
+}
+
+export function normalizeOperationId(value: string): string {
+  return String(value ?? '').trim().toLowerCase();
+}
+
+export function isValidOperationId(value: string): boolean {
+  return OPERATION_ID_PATTERN.test(normalizeOperationId(value));
 }
 
 export function sanitizeOperationPrefix(prefix: string): string {

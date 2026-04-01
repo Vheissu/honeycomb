@@ -4,12 +4,18 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "prebuild": "npm --prefix ../shared run build",
     "dev": "vite",
+    "predev": "npm --prefix ../shared run build",
     "build": "vite build",
     "preview": "vite preview",
+    "pretest": "npm --prefix ../shared run build",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "pretest:e2e": "npm --prefix ../shared run build",
+    "test:e2e": "playwright test",
+    "pretypecheck": "npm --prefix ../shared run build",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@aurelia/router": "latest",

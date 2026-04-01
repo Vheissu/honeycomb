@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { isValidHiveUsername, parseStringList, sanitizeOperationPrefix } from './index.js';
+import {
+  isValidHiveUsername,
+  isValidOperationId,
+  normalizeOperationId,
+  parseStringList,
+  sanitizeOperationPrefix,
+} from './index.js';
 
 describe('validation helpers', () => {
   it('accepts valid hive usernames', () => {
@@ -15,6 +21,21 @@ describe('validation helpers', () => {
 
   it('sanitizes operation prefixes', () => {
     expect(sanitizeOperationPrefix('Honeycomb Starter')).toBe('honeycomb_starter');
+  });
+
+  it('accepts valid operation ids', () => {
+    expect(isValidOperationId('honeycomb_app_action')).toBe(true);
+    expect(isValidOperationId('starter2_vote')).toBe(true);
+  });
+
+  it('rejects invalid operation ids', () => {
+    expect(isValidOperationId('Honeycomb App Action')).toBe(false);
+    expect(isValidOperationId('_hidden')).toBe(false);
+    expect(isValidOperationId('bad-id')).toBe(false);
+  });
+
+  it('normalizes operation ids', () => {
+    expect(normalizeOperationId(' HoneyComb_App_Action ')).toBe('honeycomb_app_action');
   });
 
   it('parses comma-delimited lists', () => {

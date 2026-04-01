@@ -15,16 +15,16 @@ export default defineConfig({
   },
   webServer: [
     {
-      command: 'npm --prefix ../.. run dev:api',
+      command: 'env HIVE_INDEXER_ENABLED=false npm --prefix ../.. run dev:api',
       url: 'http://127.0.0.1:3000/api/health',
-      reuseExistingServer: false,
+      reuseExistingServer: !process.env.CI,
       stdout: 'pipe',
       stderr: 'pipe',
     },
     {
-      command: 'npm run dev -- --host 127.0.0.1 --port 4173 --strictPort',
+      command: 'env CI=1 npm run dev -- --host 127.0.0.1 --port 4173 --strictPort',
       url: 'http://127.0.0.1:4173',
-      reuseExistingServer: false,
+      reuseExistingServer: !process.env.CI,
       stdout: 'pipe',
       stderr: 'pipe',
     },

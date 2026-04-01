@@ -23,8 +23,8 @@ export class Docs {
     },
     {
       title: 'Run tests',
-      command: ['npm test', 'npm run test:e2e -w packages/web'],
-      note: 'Unit coverage lives in each package. Browser coverage uses Playwright.',
+      command: ['npm run typecheck', 'npm run check', 'npm run test:e2e -w packages/web'],
+      note: 'Use `check` for the fast local gate. Browser coverage uses Playwright and starts the API without the Hive indexer.',
     },
   ];
 

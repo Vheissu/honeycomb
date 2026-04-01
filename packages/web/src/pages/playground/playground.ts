@@ -4,6 +4,7 @@ import {
   type BroadcastableCustomJson,
   type ExampleActionPayload,
   type HiveAccountSnapshot,
+  isValidOperationId,
 } from '@honeycomb/shared';
 import { ApiService } from '../../services/api';
 import { AuthService } from '../../services/auth';
@@ -42,8 +43,18 @@ export class Playground {
     return this.hive.createExamplePayload(this.message);
   }
 
+  get operationIdError(): string | null {
+    return isValidOperationId(this.operationId)
+      ? null
+      : 'Use lowercase letters, numbers, and underscores for operation ids.';
+  }
+
   get previewOperation(): BroadcastableCustomJson | null {
     try {
+      if (this.operationIdError) {
+        return null;
+      }
+
       return this.hive.buildPreviewOperation(this.connectedUsername, this.operationId, this.examplePayload);
     } catch {
       return null;
@@ -51,6 +62,10 @@ export class Playground {
   }
 
   get previewJson(): string {
+    if (this.operationIdError) {
+      return this.operationIdError;
+    }
+
     return JSON.stringify(this.previewOperation, null, 2);
   }
 
@@ -61,10 +76,19 @@ export class Playground {
   async broadcastExample(): Promise<void> {
     this.broadcastResult = null;
     this.broadcastError = null;
+
+    const normalizedOperationId = this.operationId.trim().toLowerCase();
+    this.operationId = normalizedOperationId;
+
+    if (!isValidOperationId(normalizedOperationId)) {
+      this.broadcastError = 'Use lowercase letters, numbers, and underscores for operation ids.';
+      return;
+    }
+
     this.broadcasting = true;
 
     try {
-      const result = await this.hive.broadcastPostingCustomJson(this.operationId, this.examplePayload);
+      const result = await this.hive.broadcastPostingCustomJson(normalizedOperationId, this.examplePayload);
       if (result.success) {
         this.broadcastResult = JSON.stringify(result.result ?? { ok: true }, null, 2);
         return;
